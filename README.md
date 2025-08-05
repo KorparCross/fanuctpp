@@ -33,6 +33,8 @@ VS Code 1.95.0
 ## Usage
 
 - **CodeFanuc Theme**: Set using the Color Theme option in VS Code.
+  Ensure Editor> Bracket Pair Colorization is disabled. Press Ctrl + Shift + P, type user settings, then search bracket and disable Bracket Pair Colorization
+  <img width="1198" height="379" alt="image" src="https://github.com/user-attachments/assets/2e3852d4-0745-4905-9c39-d65321fff49a" />
 - **Automatic Line Renumbering**: This feature is enabled by default.
     CAN BE DISABLED with user setting "autoLineRenumber": false
 - **Update Line Numbers Command**: Use the command `Update Line Numbers`. Ctrl+Shift+P
