@@ -1,9 +1,9 @@
 {
-	"name": "fanuctpp",
-	"displayName": "CodeFanuc TP Assist",
+	"name": "FanucCrossmuller",
+	"displayName": "FanucCrossmuller",
 	"description": "Advanced Language extension for Fanuc Teach Pendant Programming",
-	"version": "1.1.3",
-	"publisher": "NathanBadanjek",
+	"version": "1.1.1",
+	"publisher": "Crossmuller",
 	"main": "out/extension.js",
 	"scripts": {
 		"watch": "tsc -watch -p .",
@@ -34,7 +34,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/NateyJayBee/fanuctpp"
+		"url": "https://github.com/KorparCross/fanuctpp#"
 	},
 	"categories": [
 		"Programming Languages",
