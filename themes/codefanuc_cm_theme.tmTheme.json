@@ -1,0 +1,240 @@
+{
+    "name": "CodeFanuc CM Theme",
+    "type": "vs-dark",
+    "colors": {
+      "editor.foreground": "#FFFFFF",
+      "editor.background": "#000000"
+    },
+    "tokenColors": [
+      {
+        "scope": "meta.default.fanuctp_ls",
+        "settings": {
+          "foreground": "#FFFFFF",
+          "background": "#000000"
+        }
+      },
+      {
+        "scope": [
+          "comment.line.exclamation.fanuctp_ls",
+          "comment.line.eg.fanuctp_ls"
+        ],
+        "settings": {
+          "foreground": "#00FF00"
+        }
+      },
+      {
+        "scope": [
+          "comment.line.remark.fanuctp_ls",
+          "comment.line.slash.fanuctp_ls"
+        ],
+        "settings": {
+          "foreground": "#00FF80"
+        }
+      },
+      {
+        "scope": [
+          "punctuation.bracket.square.nested.fanuctp_ls",
+          "punctuation.bracket.parenthesis.nested.fanuctp_ls"
+        ],
+        "settings": {
+          "foreground": "#BB5E00"
+        }
+      },
+      {
+        "scope": [
+          "meta.bracket.nested.fanuctp_ls",
+          "meta.paren.nested.fanuctp_ls",
+          "meta.bracket.nested.fanuctp_ls constant.numeric.fanuctp_ls",
+          "meta.paren.nested.fanuctp_ls constant.numeric.fanuctp_ls",
+          "meta.bracket.nested.fanuctp_ls keyword.operator.fanuctp_ls",
+          "meta.paren.nested.fanuctp_ls keyword.operator.fanuctp_ls",
+          "meta.bracket.nested.fanuctp_ls constant.names.fanuctp_ls",
+          "meta.paren.nested.fanuctp_ls constant.names.fanuctp_ls",
+          "meta.bracket.nested.fanuctp_ls keyword.control.udl-3.fanuctp_ls",
+          "meta.paren.nested.fanuctp_ls keyword.control.udl-3.fanuctp_ls",
+          "meta.bracket.nested.fanuctp_ls variable.io-register.udl-4.fanuctp_ls",
+          "meta.paren.nested.fanuctp_ls variable.io-register.udl-4.fanuctp_ls",
+          "meta.bracket.nested.fanuctp_ls keyword.label-definition.udl-2.fanuctp_ls",
+          "meta.paren.nested.fanuctp_ls keyword.label-definition.udl-2.fanuctp_ls"
+        ],
+        "settings": {
+          "foreground": "#BB5E00"
+        }
+      },
+      {
+        "scope": [
+          "punctuation.bracket.square.outer.fanuctp_ls"
+        ],
+        "settings": {
+          "foreground": "#FF9B37"
+        }
+      },
+      {
+        "scope": [
+          "punctuation.bracket.parenthesis.outer.fanuctp_ls"
+        ],
+        "settings": {
+          "foreground": "#FFA346"
+        }
+      },
+      {
+        "scope": [
+          "meta.bracket.outer.fanuctp_ls",
+          "meta.paren.outer.fanuctp_ls",
+          "meta.bracket.outer.fanuctp_ls constant.numeric.fanuctp_ls",
+          "meta.paren.outer.fanuctp_ls constant.numeric.fanuctp_ls",
+          "meta.bracket.outer.fanuctp_ls keyword.operator.fanuctp_ls",
+          "meta.paren.outer.fanuctp_ls keyword.operator.fanuctp_ls",
+          "meta.bracket.outer.fanuctp_ls constant.names.fanuctp_ls",
+          "meta.paren.outer.fanuctp_ls constant.names.fanuctp_ls",
+          "meta.bracket.outer.fanuctp_ls keyword.control.udl-3.fanuctp_ls",
+          "meta.paren.outer.fanuctp_ls keyword.control.udl-3.fanuctp_ls",
+          "meta.bracket.outer.fanuctp_ls variable.io-register.udl-4.fanuctp_ls",
+          "meta.paren.outer.fanuctp_ls variable.io-register.udl-4.fanuctp_ls",
+          "meta.bracket.outer.fanuctp_ls keyword.label-definition.udl-2.fanuctp_ls",
+          "meta.paren.outer.fanuctp_ls keyword.label-definition.udl-2.fanuctp_ls"
+        ],
+        "settings": {
+          "foreground": "#FF9B37"
+        }
+      },
+      {
+        "scope": "constant.numeric.fanuctp_ls",
+        "settings": {
+          "foreground": "#DF00FF"
+        }
+      },
+      {
+        "scope": "keyword.operator.fanuctp_ls",
+        "settings": {
+          "foreground": "#D500D5"
+        }
+      },
+      {
+        "scope": "keyword.udl-1.fanuctp_ls",
+        "settings": {
+          "foreground": "#FF0000"
+        }
+      },
+      {
+        "scope": "keyword.label-definition.udl-2.fanuctp_ls",
+        "settings": {
+          "foreground": "#00FFFF",
+          "fontStyle": "bold underline"
+        }
+      },
+      {
+        "scope": "keyword.control.udl-3.fanuctp_ls",
+        "settings": {
+          "foreground": "#8000FF"
+        }
+      },
+      {
+        "scope": "variable.io-register.udl-4.fanuctp_ls",
+        "settings": {
+          "foreground": "#1D61FE",
+          "fontStyle": "bold"
+        }
+      },
+      {
+        "scope": [
+          "punctuation",
+          "punctuation.definition",
+          "punctuation.separator",
+          "punctuation.other",
+          "punctuation.section",
+          "punctuation.section.grouping"
+        ],
+        "settings": {
+          "foreground": "#FFA346"
+        }
+      },
+      {
+        "scope": "punctuation.definition.string.quote.fanuctp_ls",
+        "settings": {
+          "foreground": "#8000FF"
+        }
+      },
+      {
+        "scope": [
+          "string.quoted.single.fanuctp_ls",
+          "string.quoted.double.fanuctp_ls"
+        ],
+        "settings": {
+          "foreground": "#FFFFFF"
+        }
+      },
+      {
+        "scope": "punctuation.delimiter.udl-1.fanuctp_ls",
+        "settings": {
+          "foreground": "#FF9B37"
+        }
+      },
+      {
+        "scope": "punctuation.delimiter.udl-2.fanuctp_ls",
+        "settings": {
+          "foreground": "#BB5E00"
+        }
+      },
+      {
+        "scope": "punctuation.delimiter.udl-3.fanuctp_ls",
+        "settings": {
+          "foreground": "#FFA346"
+        }
+      },
+      {
+        "scope": "punctuation.delimiter.udl-4.fanuctp_ls",
+        "settings": {
+          "foreground": "#C16100"
+        }
+      },
+      {
+        "scope": "punctuation.delimiter.udl-5.fanuctp_ls",
+        "settings": {
+          "foreground": "#804000"
+        }
+      },
+      {
+        "scope": "punctuation.delimiter.udl-6.fanuctp_ls",
+        "settings": {
+          "foreground": "#800000"
+        }
+      },
+      {
+        "scope": "punctuation.delimiter.udl-7.fanuctp_ls",
+        "settings": {
+          "foreground": "#808000"
+        }
+      },
+      {
+        "scope": "punctuation.delimiter.udl-8.fanuctp_ls",
+        "settings": {
+          "foreground": "#808040"
+        }
+      },
+      {
+        "scope": [
+          "keyword",
+          "variable",
+          "entity",
+          "support",
+          "meta",
+          "storage",
+          "markup",
+          "invalid",
+          "text",
+          "source",
+          "constant"
+        ],
+        "settings": {
+          "foreground": "#FFFFFF"
+        }
+      },
+      {
+        "scope": "keyword.motion.fanuctp_ls",
+        "settings": {
+          "foreground": "#DC143C"
+        }
+      }
+    ]
+}
