@@ -1,119 +1,316 @@
 {
-	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-	"name": "Fanuc LS Language",
-	"scopeName": "source.fanuctp_ls",
-	"fileTypes": [
-	  "ls"
-	],
-	"patterns": [
-		{
-			"include": "#constants"
-		},
-		{
-			"include": "#keywords"
-		},
-		{
-			"include": "#strings"
-		}
-	],
-	"repository": {
-		"constants": {
-			"patterns": [	
-				{
-					"name": "constant.newline.fanuctp_ls",
-					"match": "^\\s*(\\d{1,4}):"
-				},				
-				{
-					"name": "constant.numeric.fanuctp_ls",
-					"match": "\\b\\d+\\.?\\d*\\b"
-				},
-				{
-					"name": "constant.names.fanuctp_ls",
-					"match": "(?<=:\\s*[^:]*:)([^:\\]]+)(?=\\])"
-				},			
-				{
-					"name": "constant.language.fanuctp_ls",
-					"match": "\\b(UTOOL_NUM|UFRAME_NUM|UTOOL|UFRAME|OVERRIDE|RSR|UALM|PAYLOAD|TIMER|DI|DO|GI|GO|RI|RO|UI|UO|SI|SO|SPI|SPO|SSI|SSO|CSI|CSO|AR|SR|GO|F|M|PR|VR|UF|UT|CONFIG|X|Y|Z|W|P|R|J1|J2|J3|J4|J5|J6|U|T|N|ABS)\\b"
-				}
-			]
-		},
-		"keywords": {
-			"patterns": [
-				{
-					"name": "keyword.remark.fanuctp_ls",
-					"match": "(?<=:\\s*)(!.*)"
-				},
-				{
-					"name": "keyword.comment.fanuctp_ls",
-					"match": "//(.*)$"
-				},
-				{
-					"name": "keyword.control.fanuctp_ls",
-					"match": "\\b(RESET|LINECOUNT|MESSAGE|JMP|LBL|CALL|IF|THEN|ELSE|ENDIF|END|WAIT|SKIP|Skip,|CONDITION|J|L|C|Offset|Tool_Offset|AND|OR|TIMEOUT|SELECT|RUN|LOCK|UNLOCK|PREG|ABORT|PAUSE|SkipJump|TORQ_LIMIT|PULSE|SERVOTOOL|GP1|GP2|GP3|GP4|GP5|GP6|GP8|JPOS|LPOS)\\b"
-				},
-				{
-					"name": "keyword.adv_control.fanuctp_ls",
-					"match": "\\b(VISION|RUN_FIND|GET_OFFSET|GET_PASSFAIL|GET_NFOUND)|(\\.OFFSET)\\b"
-				},
-				{
-					"name": "keyword.movetype.fanuctp_ls",
-					"match": "(\\bCNT\\d+|\\bFINE|\\bACC\\d+)"
-				},
-				{
-					"name": "keyword.on.fanuctp_ls",
-					"match": "\\b(ON|START)\\b"
-				},
-				{
-					"name": "keyword.off.fanuctp_ls",
-					"match": "\\b(OFF|STOP)\\b"
-				},
-				{
-					"name": "keyword.headerspace.fanuctp_ls",
-					"begin": "/PROG",
-					"end": "/MN",
-					"patterns": [
-						{
-							"include": "#constants"
-						},
-						{
-							"include": "#keywords"
-						},
-						{
-							"include": "#strings"
-						}
-					]
-				},
-				{
-					"name": "keyword.header.fanuctp_ls",
-					"match": "(\\b|\\/)(PROG|ATTR|APPL|MN|POS|END|Macro|MNEDITOR|DATE|TIME|READ|READ_WRITE|OWNER|COMMENT|PROG_SIZE|CREATE|MODIFIED|FILE_NAME|VERSION|LINE_COUNT|MEMORY_SIZE|PROTECT|TCD|STACK_SIZE|TASK_PRIORITY|TIME_SLICE|BUSY_LAMP_OFF|ABORT_REQUEST|PAUSE_REQUEST|DEFAULT_GROUP|CONTROL_CODE|LOCAL_REGISTERS|STORAGE|SHADOW)(\\b|\\.)"
-				},
-				{
-					"name": "keyword.operator.fanuctp_ls",
-					"match": "(\\+|\\-|\\<|\\=|\\>|\\!|\\%)"
-				},
-				{
-					"name": "keyword.label.fanuctp_ls",
-					"match": "(?<=\\[\\d+:)(.*?)(?=\\])"
-				},
-				{
-					"name": "keyword.variable.fanuctp_ls",
-					"match": "\\$\\w+"
-				}
-			]
-		},
-		"strings": {
-			"patterns": [
-				{
-					"name": "string.single_quote.fanuctp_ls",
-					"begin": "\\'",
-					"end": "\\'"
-				},
-				{
-					"name": "string.double_quote.fanuctp_ls",
-					"begin": "\"",
-					"end": "\""
-				}
-			]
-		}
-	}
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Fanuc LS Language",
+    "scopeName": "source.fanuctp_ls",
+    "fileTypes": [
+      "ls"
+    ],
+    "patterns": [
+        { "include": "#outerBrackets" },
+        { "include": "#main_patterns" }
+    ],
+    "repository": {
+        "outerBrackets": {
+            "patterns": [
+                {
+                    "name": "meta.bracket.outer.fanuctp_ls",
+                    "begin": "(\\[)",
+                    "beginCaptures": {
+                        "1": { "name": "punctuation.bracket.square.outer.fanuctp_ls" }
+                    },
+                    "end": "(\\])",
+                    "endCaptures": {
+                        "1": { "name": "punctuation.bracket.square.outer.fanuctp_ls" }
+                    },
+                    "patterns": [
+                        { "include": "#nestedBrackets" },
+                        { "include": "#main_patterns" }
+                    ]
+                },
+                {
+                    "name": "meta.paren.outer.fanuctp_ls",
+                    "begin": "(\\()",
+                    "beginCaptures": {
+                        "1": { "name": "punctuation.bracket.parenthesis.outer.fanuctp_ls" }
+                    },
+                    "end": "(\\))",
+                    "endCaptures": {
+                        "1": { "name": "punctuation.bracket.parenthesis.outer.fanuctp_ls" }
+                    },
+                    "patterns": [
+                        { "include": "#nestedBrackets" },
+                        { "include": "#main_patterns" }
+                    ]
+                }
+            ]
+        },
+        "nestedBrackets": {
+            "patterns": [
+                {
+                    "name": "meta.bracket.nested.fanuctp_ls",
+                    "begin": "(\\[)",
+                    "beginCaptures": {
+                        "1": { "name": "punctuation.bracket.square.nested.fanuctp_ls" }
+                    },
+                    "end": "(\\])",
+                    "endCaptures": {
+                        "1": { "name": "punctuation.bracket.square.nested.fanuctp_ls" }
+                    },
+                    "patterns": [
+                        { "include": "#nestedBrackets" },
+                        { "include": "#main_patterns" }
+                    ]
+                },
+                {
+                    "name": "meta.paren.nested.fanuctp_ls",
+                    "begin": "(\\()",
+                    "beginCaptures": {
+                        "1": { "name": "punctuation.bracket.parenthesis.nested.fanuctp_ls" }
+                    },
+                    "end": "(\\))",
+                    "endCaptures": {
+                        "1": { "name": "punctuation.bracket.parenthesis.nested.fanuctp_ls" }
+                    },
+                    "patterns": [
+                        { "include": "#nestedBrackets" },
+                        { "include": "#main_patterns" }
+                    ]
+                }
+            ]
+        },
+        "main_patterns": {
+            "patterns": [
+                {
+                    "name": "keyword.motion.fanuctp_ls",
+                    "match": "\\b[JL]\\b|(?i)mm/sec|%|FINE"
+                },
+                { "include": "#comments" },
+                { "include": "#numbers" },
+                { "include": "#operators" },
+                { "include": "#keywords1" },
+                { "include": "#keywords2" },
+                { "include": "#keywords3" },
+                { "include": "#keywords4" },
+                { "include": "#delimiters" },
+                { "include": "#strings" },
+                { "include": "#folders" },
+                { "include": "#newlineConstant" },
+                { "include": "#namesConstant" },
+                { "include": "#movetypeKeyword" },
+                { "include": "#onOffKeywords" },
+                { "include": "#headerspaceKeyword" },
+                { "include": "#headerKeyword" },
+                {
+                    "name": "keyword.variable.fanuctp_ls",
+                    "match": "\\$\\w+"
+                },
+                {
+                    "name": "keyword.label.fanuctp_ls",
+                    "match": "(?<=\\[\\d+:)(.*?)(?=\\])"
+                }
+            ]
+        },
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.line.exclamation.fanuctp_ls",
+                    "match": "!.*?(;|$)"
+                },
+                {
+                    "name": "comment.line.eg.fanuctp_ls",
+                    "match": "--eg:.*?(;|$)"
+                },
+                {
+                    "name": "comment.line.remark.fanuctp_ls",
+                    "match": "(?<=:\\s*)(!.*)$"
+                },
+                {
+                    "name": "comment.line.slash.fanuctp_ls",
+                    "match": "//.*$"
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.fanuctp_ls",
+                    "match": "\\b\\d+\\.?\\d*\\b"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "name": "keyword.operator.fanuctp_ls",
+                    "match": "(\\+|\\-|\\*|\\/|\\=|\\!|\\<|\\>|\\<\\>|\\>\\=|\\<\\=)"
+                }
+            ]
+        },
+        "keywords1": {
+            "patterns": [
+                {
+                    "name": "keyword.directive.udl-1.fanuctp_ls",
+                    "match": "\\b(/PROG|/ATTR|/MN|/POS|/END)\\b"
+                }
+            ]
+        },
+        "keywords2": {
+            "patterns": [
+                {
+                    "name": "keyword.label-definition.udl-2.fanuctp_ls",
+                    "match": "\\bLBL\\b"
+                }
+            ]
+        },
+        "keywords3": {
+            "patterns": [
+                {
+                    "name": "keyword.control.udl-3.fanuctp_ls",
+                    "match": "\\b(CALL|JMP|IF|ELSE|ENDIF|FOR|ENDFOR|UFRAME_NUM|UTOOL_NUM|UALM|LPOS|JPOS|THEN|END_IF|UFRAME)\\b"
+                }
+            ]
+        },
+        "keywords4": {
+            "patterns": [
+                {
+                    "name": "variable.io-register.udl-4.fanuctp_ls",
+                    "match": "\\b(R|AR|PR|P|UF|DI|DO|RI|RO|GI|GO|UI|UO)\\b"
+                }
+            ]
+        },
+        "delimiters": {
+            "patterns": [
+                {
+                    "name": "punctuation.delimiter.udl-1.fanuctp_ls",
+                    "match": "00\\[|02\\]"
+                },
+                {
+                    "name": "punctuation.delimiter.udl-2.fanuctp_ls",
+                    "match": "03\\[|05\\]"
+                },
+                {
+                    "name": "punctuation.delimiter.udl-3.fanuctp_ls",
+                    "match": "06\\(|08\\)"
+                },
+                {
+                    "name": "punctuation.delimiter.udl-4.fanuctp_ls",
+                    "match": "09\\(|11\\)"
+                },
+                {
+                    "name": "punctuation.delimiter.udl-5.fanuctp_ls",
+                    "match": "12\\(|14\\)"
+                },
+                {
+                    "name": "punctuation.delimiter.udl-6.fanuctp_ls",
+                    "match": "15\\(|17\\)"
+                },
+                {
+                    "name": "punctuation.delimiter.udl-7.fanuctp_ls",
+                    "match": "18\\(|20\\)"
+                },
+                {
+                    "name": "punctuation.delimiter.udl-8.fanuctp_ls",
+                    "match": "21\\(|23\\)"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.single.fanuctp_ls",
+                    "begin": "'",
+                    "end": "'",
+                    "captures": {
+                        "0": { "name": "punctuation.definition.string.quote.fanuctp_ls" }
+                    }
+                },
+                {
+                    "name": "string.quoted.double.fanuctp_ls",
+                    "begin": "\"",
+                    "end": "\"",
+                    "captures": {
+                        "0": { "name": "punctuation.definition.string.quote.fanuctp_ls" }
+                    }
+                }
+            ]
+        },
+        "folders": {
+            "patterns": [
+                {
+                    "name": "keyword.folding.code1.open.fanuctp_ls",
+                    "match": "\\bSELECT \" FOR\"\\b"
+                },
+                {
+                    "name": "keyword.folding.code1.close.fanuctp_ls",
+                    "match": "\\b(ELSE|ENDFOR)\\b"
+                },
+                {
+                    "name": "keyword.folding.code2.open.fanuctp_ls",
+                    "match": "\\bTHEN\\b"
+                },
+                {
+                    "name": "keyword.folding.code2.middle.fanuctp_ls",
+                    "match": "\\bELSE\\b"
+                },
+                {
+                    "name": "keyword.folding.code2.close.fanuctp_ls",
+                    "match": "\\bENDIF\\b"
+                }
+            ]
+        },
+        "newlineConstant": {
+            "patterns": [
+                {
+                    "name": "constant.newline.fanuctp_ls",
+                    "match": "^\\s*(\\d{1,4}):"
+                }
+            ]
+        },
+        "namesConstant": {
+            "patterns": [
+                {
+                    "name": "constant.names.fanuctp_ls",
+                    "match": "(?<=:\\s*[^:]*:)([^:\\]]+)(?=\\])"
+                }
+            ]
+        },
+        "movetypeKeyword": {
+            "patterns": [
+                {
+                    "name": "keyword.movetype.fanuctp_ls",
+                    "match": "(\\bCNT\\d+|\\bFINE|\\bACC\\d+)"
+                }
+            ]
+        },
+        "onOffKeywords": {
+            "patterns": [
+                {
+                    "name": "keyword.on.fanuctp_ls",
+                    "match": "\\b(ON|START)\\b"
+                },
+                {
+                    "name": "keyword.off.fanuctp_ls",
+                    "match": "\\b(OFF|STOP)\\b"
+                }
+            ]
+        },
+        "headerspaceKeyword": {
+            "patterns": [
+                {
+                    "name": "keyword.headerspace.fanuctp_ls",
+                    "begin": "/PROG",
+                    "end": "/MN",
+                    "patterns": [{ "include": "#main_patterns" }]
+                }
+            ]
+        },
+        "headerKeyword": {
+            "patterns": [
+                {
+                    "name": "keyword.header.fanuctp_ls",
+                    "match": "(\\b|\\/)(PROG|ATTR|APPL|MN|POS|END|Macro|MNEDITOR|DATE|TIME|READ|READ_WRITE|OWNER|COMMENT|PROG_SIZE|CREATE|MODIFIED|FILE_NAME|VERSION|LINE_COUNT|MEMORY_SIZE|PROTECT|TCD|STACK_SIZE|TASK_PRIORITY|TIME_SLICE|BUSY_LAMP_OFF|ABORT_REQUEST|PAUSE_REQUEST|DEFAULT_GROUP|CONTROL_CODE|LOCAL_REGISTERS|STORAGE|SHADOW)(\\b|\\.)"
+                }
+            ]
+        }
+    }
 }
