@@ -114,7 +114,7 @@
             "patterns": [
                 {
                     "name": "comment.line.exclamation.fanuctp_ls",
-                    "match": "!.*?(;|$)"
+                    "match": "^\\s*!.*?(;|$)"
                 },
                 {
                     "name": "comment.line.eg.fanuctp_ls",
@@ -126,7 +126,7 @@
                 },
                 {
                     "name": "comment.line.slash.fanuctp_ls",
-                    "match": "//.*$"
+                    "match": "^\\s*//.*$"
                 }
             ]
         },
