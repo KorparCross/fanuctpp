@@ -8,7 +8,7 @@ import {
     getNamePanel,
     getLabelPanel,
     getGlobalGroupState
- } from './state';
+} from './state';
 
 import { CallDefinitionProvider } from './commands/openProgramCommands';
 import { debounce } from './utils/debounce';
@@ -26,46 +26,57 @@ import { registerBackupView, registerBackupManagerView } from './commands/backup
 
 export function activate(context: vscode.ExtensionContext) {
 
-    //console.log('Extension "fanuctpp" is now active!');
-
-    // ------------------INITIAL SETUP-------------------
-    // Set line numbers for all currently open documents
-    vscode.workspace.textDocuments.forEach(document => {
-        if (document.languageId === 'fanuctp_ls') {
-            setLineNumbers(document);
-        }
-    });
-
     // --------------------USER CONFIG-------------------
     const config = vscode.workspace.getConfiguration('fanuctpp');
-    // Enable auto line edits
+    // Auto line renumbering setting (default true)
     const autoLineRenum = config.get<boolean>('autoLineRenumber', true);
 
-    // Set line numbers for documents that are opened
+    // ------------------INITIAL SETUP-------------------
+    // Only set line numbers if auto-renumber is enabled
+    if (autoLineRenum) {
+        vscode.workspace.textDocuments.forEach(document => {
+            if (document.languageId === 'fanuctp_ls') {
+                setLineNumbers(document);
+            }
+        });
+    }
+
+    // ------------------EVENT LISTENERS-------------------
+    // On document open
     const disposeOpen = vscode.workspace.onDidOpenTextDocument(document => {
-        if (document.languageId === 'fanuctp_ls') {
+        if (document.languageId === 'fanuctp_ls' && autoLineRenum) {
             setLineNumbers(document);
         }
     });
 
     // Debounced handler for text document changes
-    const debouncedOnDidChangeTextDocument = debounce(async (event: vscode.TextDocumentChangeEvent) => { 
-        // Check if user or ext is updating the line numbers
-        if (getIsAutoUpd() === true) {
+    const debouncedOnDidChangeTextDocument = debounce(async (event: vscode.TextDocumentChangeEvent) => {
+        if (getIsAutoUpd()) {
             return;
         }
 
-        setLineNumbers(event.document);
-
         if (event.document.languageId === 'fanuctp_ls' && autoLineRenum) {
+            setLineNumbers(event.document);
             await editLineNumbers(event.document);
         }
-    }, 50); 
+    }, 50);
 
-    const disposeDebounceChange = vscode.workspace.onDidChangeTextDocument(debouncedOnDidChangeTextDocument)
+    const disposeDebounceChange = vscode.workspace.onDidChangeTextDocument(debouncedOnDidChangeTextDocument);
+
+    // Listen for active editor change
+    const disposeActiveEditorChange = vscode.window.onDidChangeActiveTextEditor(editor => {
+        if (editor) {
+            const currentFilePath = editor.document.uri.fsPath;
+            if (currentFilePath !== getPreviousActiveEditorFilePath()) {
+                setLastActiveEditor(editor);
+                setPreviousActiveEditorFilePath(currentFilePath);
+                handleActiveEditorChange(editor);
+            }
+        }
+    });
 
     // ------------------COMMANDS-------------------
-    // STANDALONE UPDATE LINE NUMBERS
+    // Manual update of line numbers
     const disposableCommand = vscode.commands.registerCommand('extension.updateLineNumbers', async () => {
         const editor = vscode.window.activeTextEditor;
         if (editor && editor.document.languageId === 'fanuctp_ls') {
@@ -73,28 +84,17 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    // Listen for changes in the active editor
-    const disposeActiveEditorChange = vscode.window.onDidChangeActiveTextEditor(editor => {
-        if (editor) {
-            const currentFilePath = editor.document.uri.fsPath;
-            if (currentFilePath !== getPreviousActiveEditorFilePath()) {
-                setLastActiveEditor(editor);
-                setPreviousActiveEditorFilePath(currentFilePath);
-                // Handle the active editor change
-                handleActiveEditorChange(editor);
-            }
-        }
-    });
-
+    // ------------------WEBVIEW UPDATES-------------------
     function handleActiveEditorChange(editor: vscode.TextEditor) {
         const namePanel = getNamePanel();
         const labelPanel = getLabelPanel();
+
         if (namePanel) {
             const groupedNames = extractItemNames(editor.document);
             namePanel.webview.postMessage({ command: 'updateGroupState', groupState: getGlobalGroupState() });
             namePanel.webview.html = getNameWebContent(editor.document, groupedNames, getGlobalGroupState());
         }
-        // Update the Webview content
+
         if (labelPanel) {
             const labels = extractLabels(editor.document);
             const jumps = extractJumps(editor.document, labels);
@@ -104,23 +104,26 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }
 
-    // Register webview View commands
+    // ------------------REGISTER WEBVIEW COMMANDS-------------------
     const disposeNameView = registerNameView(context);
     const disposeLabelView = registerLabelView(context);
     const disposeBackupView = registerBackupView(context);
     const disposeBackupManagerView = registerBackupManagerView(context);
 
-    // Register the definition provider to open files
+    // ------------------REGISTER DEFINITION PROVIDER-------------------
     context.subscriptions.push(vscode.languages.registerDefinitionProvider('fanuctp_ls', new CallDefinitionProvider()));
 
-    // Pushing all event listeners and commands to the context
-    context.subscriptions.push(disposeOpen, disposeDebounceChange, 
-        disposeLabelView, disposeNameView, disposeActiveEditorChange, 
-        disposableCommand);
+    // ------------------PUSH SUBSCRIPTIONS-------------------
+    context.subscriptions.push(
+        disposeOpen,
+        disposeDebounceChange,
+        disposeLabelView,
+        disposeNameView,
+        disposeActiveEditorChange,
+        disposableCommand,
+        disposeBackupView,
+        disposeBackupManagerView
+    );
 }
 
 export function deactivate() {}
-function length(arg0: string[]) {
-    throw new Error('Function not implemented.');
-}
-
