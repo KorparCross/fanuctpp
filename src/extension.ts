@@ -1,90 +1,94 @@
 import * as vscode from 'vscode';
-
+import * as editUtils from './utils/edit';
+import { debounce } from './utils/debounce';
 import { 
-    setLastActiveEditor,
-    setPreviousActiveEditorFilePath,
-    getPreviousActiveEditorFilePath,
     getIsAutoUpd,
+    setLastActiveEditor,
+    getPreviousActiveEditorFilePath,
+    setPreviousActiveEditorFilePath,
     getNamePanel,
     getLabelPanel,
     getGlobalGroupState
 } from './state';
-
 import { CallDefinitionProvider } from './commands/openProgramCommands';
-import { debounce } from './utils/debounce';
-import { setLineNumbers, editLineNumbers } from './utils/edit';
 import { extractItemNames, extractLabels, extractJumps, extractSkips, extractSkipJumps } from './utils/extractors';
-
-import { getLabelWebContent } from './webviews/labelWebview';
-import { registerLabelView } from './commands/labelCommands';
-
 import { getNameWebContent } from './webviews/nameWebview';
+import { getLabelWebContent } from './webviews/labelWebview';
 import { registerNameView } from './commands/nameCommands';
-
-import { getBackupWebContent, getBackupManagerWebContent } from './webviews/backupWebview';
+import { registerLabelView } from './commands/labelCommands';
 import { registerBackupView, registerBackupManagerView } from './commands/backupCommands';
 
-export function activate(context: vscode.ExtensionContext) {
-
-    // --------------------USER CONFIG-------------------
+// ------------------HELPER: CONFIG-------------------
+function isAutoLineRenumberEnabled(): boolean {
     const config = vscode.workspace.getConfiguration('fanuctpp');
-    // Auto line renumbering setting (default true)
-    const autoLineRenum = config.get<boolean>('autoLineRenumber', true);
+    return config.get<boolean>('autoLineRenumber', true);
+}
 
-    // ------------------INITIAL SETUP-------------------
-    // Only set line numbers if auto-renumber is enabled
-    if (autoLineRenum) {
-        vscode.workspace.textDocuments.forEach(document => {
-            if (document.languageId === 'fanuctp_ls') {
-                setLineNumbers(document);
-            }
-        });
+// ------------------WRAPPED UTILITIES-------------------
+export function setLineNumbers(document: vscode.TextDocument) {
+    if (!isAutoLineRenumberEnabled()) {
+        console.log('Skipping setLineNumbers due to autoLineRenumber = false for:', document.fileName);
+        return;
     }
+    editUtils.setLineNumbers(document);
+}
 
-    // ------------------EVENT LISTENERS-------------------
-    // On document open
-    const disposeOpen = vscode.workspace.onDidOpenTextDocument(document => {
-        if (document.languageId === 'fanuctp_ls' && autoLineRenum) {
-            setLineNumbers(document);
+export async function editLineNumbers(document: vscode.TextDocument, force: boolean = false) {
+    if (!isAutoLineRenumberEnabled() && !force) {
+        console.log('Skipping editLineNumbers due to autoLineRenumber = false for:', document.fileName);
+        return;
+    }
+    await editUtils.editLineNumbers(document, force);
+}
+
+// ------------------ACTIVATE-------------------
+export function activate(context: vscode.ExtensionContext) {
+    // ------------------INITIAL SETUP-------------------
+    vscode.workspace.textDocuments.forEach(document => {
+        if (document.languageId === 'fanuctp_ls') {
+            editUtils.setLineNumbers(document); // safe, just sets initial start/end
         }
     });
 
-    // Debounced handler for text document changes
-    const debouncedOnDidChangeTextDocument = debounce(async (event: vscode.TextDocumentChangeEvent) => {
-        if (getIsAutoUpd()) {
-            return;
+    // ------------------EVENT LISTENERS-------------------
+    const disposeOpen = vscode.workspace.onDidOpenTextDocument(document => {
+        if (document.languageId === 'fanuctp_ls') {
+            editUtils.setLineNumbers(document);
         }
+    });
 
-        if (event.document.languageId === 'fanuctp_ls' && autoLineRenum) {
-            setLineNumbers(event.document);
-            await editLineNumbers(event.document);
-        }
+    const debouncedOnDidChangeTextDocument = debounce(async (event: vscode.TextDocumentChangeEvent) => {
+        if (getIsAutoUpd()) return;
+        if (event.document.languageId !== 'fanuctp_ls') return;
+
+        const config = vscode.workspace.getConfiguration('fanuctpp');
+        const autoLineRenum = config.get<boolean>('autoLineRenumber', true);
+        if (!autoLineRenum) return;
+
+        await editUtils.editLineNumbers(event.document);
     }, 50);
 
     const disposeDebounceChange = vscode.workspace.onDidChangeTextDocument(debouncedOnDidChangeTextDocument);
 
-    // Listen for active editor change
-    const disposeActiveEditorChange = vscode.window.onDidChangeActiveTextEditor(editor => {
-        if (editor) {
-            const currentFilePath = editor.document.uri.fsPath;
-            if (currentFilePath !== getPreviousActiveEditorFilePath()) {
-                setLastActiveEditor(editor);
-                setPreviousActiveEditorFilePath(currentFilePath);
-                handleActiveEditorChange(editor);
-            }
-        }
-    });
-
-    // ------------------COMMANDS-------------------
-    // Manual update of line numbers
+    // Command: manually update line numbers
     const disposableCommand = vscode.commands.registerCommand('extension.updateLineNumbers', async () => {
         const editor = vscode.window.activeTextEditor;
         if (editor && editor.document.languageId === 'fanuctp_ls') {
-            await editLineNumbers(editor.document, true);
+            await editLineNumbers(editor.document, true); // force update
         }
     });
 
-    // ------------------WEBVIEW UPDATES-------------------
+    // Active editor changes (webview updates)
+    const disposeActiveEditorChange = vscode.window.onDidChangeActiveTextEditor(editor => {
+        if (!editor) return;
+        const currentFilePath = editor.document.uri.fsPath;
+        if (currentFilePath !== getPreviousActiveEditorFilePath()) {
+            setLastActiveEditor(editor);
+            setPreviousActiveEditorFilePath(currentFilePath);
+            handleActiveEditorChange(editor);
+        }
+    });
+
     function handleActiveEditorChange(editor: vscode.TextEditor) {
         const namePanel = getNamePanel();
         const labelPanel = getLabelPanel();
@@ -104,14 +108,16 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }
 
-    // ------------------REGISTER WEBVIEW COMMANDS-------------------
+    // ------------------WEBVIEWS-------------------
     const disposeNameView = registerNameView(context);
     const disposeLabelView = registerLabelView(context);
     const disposeBackupView = registerBackupView(context);
     const disposeBackupManagerView = registerBackupManagerView(context);
 
-    // ------------------REGISTER DEFINITION PROVIDER-------------------
-    context.subscriptions.push(vscode.languages.registerDefinitionProvider('fanuctp_ls', new CallDefinitionProvider()));
+    // ------------------DEFINITION PROVIDER-------------------
+    context.subscriptions.push(
+        vscode.languages.registerDefinitionProvider('fanuctp_ls', new CallDefinitionProvider())
+    );
 
     // ------------------PUSH SUBSCRIPTIONS-------------------
     context.subscriptions.push(
@@ -126,4 +132,5 @@ export function activate(context: vscode.ExtensionContext) {
     );
 }
 
+// ------------------DEACTIVATE-------------------
 export function deactivate() {}
